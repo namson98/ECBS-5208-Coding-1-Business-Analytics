@@ -1,6 +1,10 @@
 ---
 title: "Tryout"
+<<<<<<< HEAD
 output: pdf_document
+=======
+output: pdf_document #html_document #
+>>>>>>> 1ea8dd23b874b88c217c1e0cc8e673a80c645913
 ---
 
 ```{r setup, include=FALSE}
