@@ -40,13 +40,15 @@ datasummary( price + price_online + p_diff ~
              data = bpp_orig )
 
 # Get a better idea about price differences among different countries
-datasummary( as.factor( country_s )*p_diff ~ Mean + Median , data = bpp_orig )
+datasummary( as.factor( country_s )*(p_diff + price +price_online) ~ Mean + Median , data = bpp_orig )
 
 ##
 # Task
 # 1) filter the data to 2016 and check the mean and median for each country
 #
-
+bpp_orig %>%
+  filter(year==2016) %>%
+    datasummary(COUNTRY * p_diff ~ Mean + Median, data = .)
 
 # Add Range as an external function to the descriptive
 # Our first function:
@@ -73,7 +75,7 @@ datasummary( price + price_online + p_diff ~
 # Check for extreme values - use of Histograms:
 #   simple - built in histogram
 ggplot( data = bpp_orig ) +
-  geom_histogram( aes( x = price ) , fill = 'navyblue' ) +
+  geom_histogram( aes( x = price ) , fill = 'navyblue', bins = 10) +
   labs(x = "Price",
        y = "Count" )
 
@@ -107,13 +109,19 @@ ggplot( data = bpp ) +
   geom_density( aes( x = price ) , color = 'blue'  , alpha = 0.1 ) +
   geom_density( aes( x = price_online )  , color = 'red' , alpha = 0.1 ) +
   labs(x = "Price",
-       y = "Relative Frequency" )
+       y = "Relative Frequency" ) +
+  xlim(0,100)
 
 ###
 # Task
 #   1) Do the same histogram, but now with the price differences
 #   2) Add xlim(-5,5) command to ggplot! What changed?
-
+ggplot( data = bpp ) +
+  geom_density( aes( x = price ) , color = 'blue'  , alpha = 0.1 ) +
+  geom_density( aes( x = p_diff )  , color = 'red' , alpha = 0.1 ) +
+  labs(x = "Price",
+       y = "Relative Frequency" ) +
+  xlim(-5,5)
 
 
 # Check for price differences
@@ -151,6 +159,12 @@ ggplot(data = bpp , aes( x = p_diff , fill = country ) ) +
 # 1 )Do the same, but use geom_density instead of geom_histogram!
 #     You may play around with the xlim!
 # 2) Drop the `facet_wrap` command! What happens? What if instead of `fill` you use `color` or `group`
+ggplot(data = bpp , aes( x = p_diff , fill = country ) ) +
+  geom_density( aes( y = ..density.. ), alpha =0.4 ) +
+  labs( x = "Price" , y = 'Relative Frequency' ,
+        fill = 'Country' ) +
+  facet_wrap(~country)+
+  xlim(-1,1)
 
 
 ######
