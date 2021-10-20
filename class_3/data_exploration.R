@@ -308,3 +308,16 @@ ggplot( corr_table , aes( x = correlation ,
 # Note: 1) use color for prettier output with factor
 #       2) You can alter the legend labels with `color=`
 
+# Make a correlation table for each country
+corr_table2 <- bpp %>% 
+  select( country , year, price , price_online ) %>% 
+  group_by(year, country) %>% 
+  summarise( correlation = cor( price,price_online) )
+
+corr_table2
+
+ggplot( corr_table2 , aes( x = correlation, 
+        y = fct_reorder( country, correlation),
+        color = as.factor(year))) +
+  geom_point(size = 2) +
+  labs( x = 'Correlation', y = 'Country' , color = 'Year')
