@@ -21,11 +21,14 @@ glimpse( raw_df )
 
 # Add a new variable
 df <- mutate( raw_df , nnights = 1 )
+rm( raw_df )
 
 ###
 # Data cleaning - separating character vector with separator 
 # Check accomotationtype, note typeof is character
 select( df , accommodationtype )
+# Does the same
+df$accommodationtype
 
 # Clean accommodationtype column: separate the characters at @ 
 #   and create two new variables: "garbage" and "acc_type"
@@ -43,6 +46,7 @@ is.factor( df$acc_type )
 
 ##
 # Task - creating a numeric vector w simple separation
+<<<<<<< HEAD
 #   1) Correct the guestreviewrating into simple numeric variable
 df <- separate( df , guestreviewsrating , " /" ,
                 into = c("ratings") )
@@ -50,6 +54,20 @@ df <- separate( df , guestreviewsrating , " /" ,
 #   2) check with `typeof()`
 #   3) convert the variable into a numeric variable
 df$ratings <- as.numeric(df$ratings)
+=======
+#   1) Correct the guestreviewsrating into simple numeric variable
+#   2) check with `typeof()`
+#   3) convert the variable into a numeric variable
+
+df <- separate( df ,  guestreviewsrating , "/" , 
+                into = c( "ratings" ) )
+typeof( df$ratings )
+# In case of only one variable you may use the `classical` approach
+#   when adding/redefining a variable
+df$ratings <- as.numeric( df$ratings )
+
+
+>>>>>>> de8b597ba260c53b2cb8ac62f8c00e6426c95ed0
 
 ##
 # Create a numeric vector with complicated separation
@@ -84,10 +102,23 @@ df <- rename( df , rating_count = rating_reviewcount,
 ##
 # Task:
 #   also rename the following variables as follows:
+<<<<<<< HEAD
 df <- rename( df , ratingta_count = rating2_ta_reviewcount,
                    country = addresscountryname,
                    stars = starrating,
                    city = s_city)
+=======
+#       ratingta_count = rating2_ta_reviewcount,
+#       country = addresscountryname,
+#       stars = starrating,
+#       city = s_city
+
+df <- rename( df , ratingta_count = rating2_ta_reviewcount,
+                   country = addresscountryname,
+                   stars = starrating,
+                   city = s_city )
+
+>>>>>>> de8b597ba260c53b2cb8ac62f8c00e6426c95ed0
 
 ####
 ## Find missing values - filtering
@@ -103,7 +134,8 @@ df <- filter( df , !is.na( ratings ) )
 ##
 # Task:
 # Do the same for missing id-s and argue what to do with them! 
-
+table( df$hotel_id , useNA = "ifany" )
+df <- filter( df , !is.na( hotel_id ) )
 
 ####
 ## Correcting wrongly documented observations:
@@ -126,6 +158,7 @@ df <- filter( df , !duplicated( df ) )
 # 2) Remove duplicates to specific variables, that are important to us
 # use of subset function
 sub_df <- subset( df , select = c( country , hotel_id ) )
+
 df <- filter( df , !duplicated( 
   subset( df , select = c( country,hotel_id,distance,
                            stars, ratings, price, year, month,
@@ -139,6 +172,11 @@ df <- filter( df , !duplicated(
 #       - with Hotel types which has stars between 3 and 4
 #       - and drop observations which has price more than 1000 EUR.
 
+hotel_vienna <- filter( df , city == 'Vienna' ,
+                         year == 2017 & month == 11 & weekend == 0 ,
+                         acc_type == 'Hotel' , 
+                         stars >= 3 & stars <= 4 ,
+                         price < 1000 )
 
 
 ##

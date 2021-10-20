@@ -5,7 +5,8 @@
 ##########################
 
 rm( list = ls() )
-# Tidiverse includes readr package which we use for importing datasets!
+# Tidyverse includes readr package 
+#  which we use for importing datasets!
 library( tidyverse )
 
 
@@ -13,10 +14,15 @@ library( tidyverse )
 ######
 ## Importing data:
 # 3 options to import data:
-#   1) Import by clicking: File -> Import Dataset -> From Text (readr) / this is csv or use other formats
+#   1) Import by clicking: File -> Import Dataset -> 
+#       -> From Text (readr) / this is csv or use other formats
 #   2) Import by defining your path:
 
+<<<<<<< HEAD
 data_in <- "~/Desktop/repos/ECBS-5208-Coding-1-Business-Analytics/class_2/data/hotels/"
+=======
+data_in <- "~/Documents/Egyetem/CEU/Teaching/2021/Coding_in_R/ECBS-5208-Coding-1-Business-Analytics/class_2/data/hotels/"
+>>>>>>> de8b597ba260c53b2cb8ac62f8c00e6426c95ed0
 df_0      <- read_csv(paste0(data_in,"clean/hotels-vienna.csv"))
 
 # Note: your working directory (wd) is accessible by:
@@ -25,7 +31,7 @@ getwd()
 # if you work with 'projects' it automatically sets your path
 
 # delete your data
-rm( df_0 )
+rm( hotels_vienna , df_0 )
 
 #   3) Import by using url - this is going to be our preferred method at this course!
 #     Note: importing from the web is almost inferior to use your local disc, 
@@ -58,6 +64,8 @@ write_csv( df , paste0( data_out , 'my_csvfile.csv' ) )
 
 # If due to some reason you would like to export as xls(x)
 install.packages( "xlsx" )
+install.packages("devtools")
+install.packages("rJava")
 library( xlsx )
 write.xlsx( df , paste0( data_out , 'my_csvfile.xlsx' ) , sheetName = "Sheet1" )
 
@@ -71,6 +79,7 @@ save( df , file = paste0( data_out , 'my_rfile.RData' ) )
 #
 
 # tidyquant
+install.packages("tidyquant")
 library(tidyquant)
 # Apple stock prices from Yahoo
 amc <- tq_get('AMC',
@@ -101,5 +110,9 @@ gdp_data <- WDI(indicator='NY.GDP.PCAP.PP.KD', country="all", start=2019, end=20
 # 4) also load the data directly from the web
 bookings <- read_csv(url("https://osf.io/yzntm/download")) 
 
+<<<<<<< HEAD
 # 5) write out this file as xlsx and as a .RData next to the original data.
 write.xlsx( df , paste0( data_out , 'hotel_bookings.xlsx' ) )
+=======
+
+>>>>>>> de8b597ba260c53b2cb8ac62f8c00e6426c95ed0
