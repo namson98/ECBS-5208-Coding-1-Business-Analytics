@@ -15,9 +15,8 @@
 #   To get 7 points you will need to modify at least 7 parameters of the theme_classic or theme_bw!
 
 theme_colorized <- function( base_size = 11, base_family = "") {
-  # Inherit the basic properties of theme_bw
+  # Inherit the basic properties of theme_classic
   theme_classic() %+replace% 
-    # Replace the following items:
     theme(
       # place legend to the top right and add some formatting
       legend.position = c(.95, .95),
@@ -33,7 +32,6 @@ theme_colorized <- function( base_size = 11, base_family = "") {
       plot.background = element_rect(fill = "cyan"),
       axis.line = element_line(color = "black"),
       axis.ticks = element_line(color = "black"),
-      axis.text = element_text(color = "black"),
-      plot.caption =
+      axis.text = element_text(color = "black")
     )
 }
