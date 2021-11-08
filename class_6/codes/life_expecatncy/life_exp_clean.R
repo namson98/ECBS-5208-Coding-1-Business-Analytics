@@ -29,7 +29,7 @@ d1 <- df %>% filter(grepl("[[:digit:]]", df$iso2c))
 d1
 # Filter these out
 df <- df %>% filter( !grepl("[[:digit:]]", df$iso2c) )
-
+df
 # Some grouping observations are still there, check each of them
 #   HK - Hong Kong, China
 #   OE - OECD members

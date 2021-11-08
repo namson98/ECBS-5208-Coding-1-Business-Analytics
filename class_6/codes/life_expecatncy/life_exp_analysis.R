@@ -43,14 +43,23 @@ df <- read_csv( my_url )
 #     note we could have download an other GDP total variable for this,
 #     but for comparison purposes, let use the exact same data and 
 #     concentrate on difference which are only due to transforming the variables.
-
-
+df <- df %>%
+        mutate(total_gdp = gdppc*population)
 
 ######
 # Check basic scatter-plots!
 #   Two competing models:
 #     A) lifeexp = alpha + beta * gdptot
 #     B) lifeexp = alpha + beta * gdppc
+
+ggplot(df, aes(total_gdp,lifeexp)) +
+  geom_point() +
+  geom_smooth(method = 'lm')
+
+ggplot(df, aes(gdppc,lifeexp)) +
+  geom_point() +
+  geom_smooth(method = 'lm')
+
 #
 # Where to use log-transformation? - level-level vs level-log vs log-level vs log-log
 # Create the following graphs with loess:
@@ -58,23 +67,48 @@ df <- read_csv( my_url )
 ## Model A) lifeexp = alpha + beta * gdptot
 # 1) lifeexp - gdptot: level-level model without scaling
 
+ggplot(df, aes(total_gdp,lifeexp)) +
+  geom_point() +
+  geom_smooth(method = 'loess')
 
 # 2) Change the scale for Total GDP for checking log-transformation
 # Tip: you can use `cale_x_continuous( trans = log_trans() )` with scales
 #   this is good as you can check without creating a new variable
 
+ggplot(df, aes(total_gdp,lifeexp)) +
+  geom_point() +
+  geom_smooth(method = 'loess') +
+  scale_x_continuous(trans = log_trans())
+
 # 3) Change the scale for Total GDP and life-expectancy for checking log-transformation
 
+ggplot(df, aes(total_gdp,lifeexp)) +
+  geom_point() +
+  geom_smooth(method = 'loess') +
+  scale_x_continuous(trans = log_trans()) +
+  scale_y_continuous(trans = log_trans())
 
 ## Model B) lifeexp = alpha + beta * gdppc:
 # 4) lifeexp - gdppc: level-level model without scaling
 
+ggplot(df, aes(gdppc,lifeexp)) +
+  geom_point() +
+  geom_smooth(method = 'loess')
 
 # 5) Change the scale for GDP/capita for checking log-transformation
 
+ggplot(df, aes(gdppc,lifeexp)) +
+  geom_point() +
+  geom_smooth(method = 'loess') +
+  scale_x_continuous(trans = log_trans())
 
 # 6) Change the scale for GDP/capita and life-expectancy for checking log-transformation
 
+ggplot(df, aes(gdppc,lifeexp)) +
+  geom_point() +
+  geom_smooth(method = 'loess') +
+  scale_x_continuous(trans = log_trans())+
+  scale_y_continuous(trans = log_trans())
 
 ####
 # You should reach the following conclusions:
@@ -95,6 +129,9 @@ df <- read_csv( my_url )
 #   ln_gdppc  = Log of gdp/capita 
 #   ln_gdptot = log GDP total
 
+df <-  df %>% mutate(ln_gdppc = log(gdppc),
+                     ln_gdptot = log(total_gdp))
+
 
 ######
 # Run the following competing models:
@@ -102,12 +139,25 @@ df <- read_csv( my_url )
 #     reg1: lifeexp = alpha + beta * ln_gdptot
 #     reg2: lifeexp = alpha + beta_1 * ln_gdptot + beta_2 * ln_gdptot^2
 #     reg3: lifeexp = alpha + beta_1 * ln_gdptot + beta_2 * ln_gdptot^2 + beta_3 * ln_gdptot^3
+
+reg1 <- feols(lifeexp ~ ln_gdptot, data = df)
+reg2 <- feols(lifeexp ~ ln_gdptot + ln_gdptot**2, data = df)
+reg3 <- feols(lifeexp ~ ln_gdptot + ln_gdptot**2 + ln_gdptot**3, data = df)
+
 #   w ln_gdppc:
 #     reg4: lifeexp = alpha + beta * ln_gdppc
 #     reg5: lifeexp = alpha + beta_1 * ln_gdppc + beta_2 * ln_gdppc^2
 #     reg6: lifeexp = alpha + beta_1 * ln_gdppc * 1(gdppc < 50) + beta_2 * ln_gdppc * 1(gdppc >= 50)
+
+
+reg4 <- feols(lifeexp ~ ln_gdppc, data = df)
+reg5 <- feols(lifeexp ~ ln_gdppc + ln_gdppc**2, data = df)
+reg6 <- feols(lifeexp ~ ln_gdppc*1(gddpc < 50) + ln_gdppc*1(gdppc >= 50), data = df)
+
 #   Extra: weighted-ols:
 #     reg7: lifeexp = alpha + beta * ln_gdppc, weights: population
+
+reg7 <- feols(lifeexp ~ ln_gdppc, weights = df$population, data = df)
 
 ###
 # Two ways to handle polynomials: 
@@ -127,17 +177,30 @@ df <- read_csv( my_url )
 # reg1: lifeexp = alpha + beta * ln_gdptot
 # + Plot
 
+ggplot(aes(ln_gdptot, lifeexp), data=df) +
+  geom_point() +
+  geom_smooth(method = 'lm', formula = y ~ x)
+
 ##
 # reg2: lifeexp = alpha + beta_1 * ln_gdptot + beta_2 * ln_gdptot^2
 # + Plot
+
+ggplot(aes(ln_gdptot, lifeexp), data=df) +
+  geom_point() +
+  geom_smooth(method = 'lm', formula = y ~ poly(x, 2, raw=TRUE))
 
 ##
 # reg3: lifeexp = alpha + beta_1 * ln_gdptot + beta_2 * ln_gdptot^2 + beta_3 * ln_gdptot^3
 # + Plot
 
+ggplot(aes(ln_gdptot, lifeexp), data=df) +
+  geom_point() +
+  geom_smooth(method = 'lm', formula = y ~ poly(x, 3, raw=TRUE))
+
 # Compare these models with etable()
 # From these you should consider reg1 and reg3 only!
 
+etable(reg1, reg3)
 
 ##
 # Models with gdp per capita:
@@ -145,8 +208,16 @@ df <- read_csv( my_url )
 # reg4: lifeexp = alpha + beta * ln_gdppc
 # + plot
 
+ggplot(aes(ln_gdppc, lifeexp), data=df) +
+  geom_point() +
+  geom_smooth(method = 'lm', formula = y ~ poly(x, 1, raw=TRUE))
+
 # reg5: lifeexp = alpha + beta_1 * ln_gdppc + beta_2 * ln_gdppc^2
 # + plot
+
+ggplot(aes(ln_gdppc, lifeexp), data=df) +
+  geom_point() +
+  geom_smooth(method = 'lm', formula = y ~ poly(x, 2, raw=TRUE))
 
 ##
 # Compare results with gdp per capita:
@@ -155,13 +226,20 @@ df <- read_csv( my_url )
 # Compare reg1, reg3 and reg4 to get an idea log transformation is a good idea:
 # R2 measure is much better for reg4...
 
+etable(reg1, reg3, reg4)
 
 ##
 # Regression with piecewise linear spline:
 # 1st define the cutoff for gdp per capita
+cutoff <- 
+
 # 2nd take care of log transformation -> cutoff needs to be transformed as well
 # reg6: lifeexp = alpha + beta_1 * ln_gdppc * 1(gdppc < 50) + beta_2 * ln_gdppc * 1(gdppc >= 50)
 # + plot
+
+cutoff <- 2
+reg7 <- feols(  ~ lspline( distance , cutoff ), data = hotels )
+reg7
 
 ##
 # Extra
@@ -199,20 +277,39 @@ ggplot(data = df, aes(x = ln_gdppc, y = lifeexp)) +
 
 # Get the predicted y values from the model
 
+reg4$fitted.values
+
 # Calculate the errors of the model
+
+reg4$residuals
 
 # Find countries with largest negative errors
 
+df$residuals <- reg4$residuals  ## Add the residuals to the data.frame
+
+o <- order(df$residuals^2, decreasing=T)   ## Reorder to put largest first
+
+bottom5 <- df[o[1:5],]
+
+#Equatorial Guinea
 
 # Find countries with largest positive errors
 
+df$residuals <- reg4$residuals  ## Add the residuals to the data.frame
+
+o <- order(df$residuals^2, decreasing=F)   ## Reorder to put largest first
+
+top5 <- df[o[1:5],]
+
+#India
 
 # Extra HW: create a graph with highlighting the best and worst 5 countries!
 #   Use annotation with the names of the countries.
 
+f1 <- union(top5, bottom5)
 
-
-
+ggplot(aes(country, residuals), data=f1) +
+  geom_point()
 
 
 
