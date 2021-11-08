@@ -57,6 +57,11 @@ etable(reg1, reg2, reg3)
 #
 # Take care of labels, axis limits and breaks!
 
+ggplot(aes(rating, yhat1), data = hotels) +
+  geom_line() +
+  labs(x = 'Ratings',
+       y = 'Predicted values',
+       title = 'Relationship between ratings and their estimated values')
 
 
 
