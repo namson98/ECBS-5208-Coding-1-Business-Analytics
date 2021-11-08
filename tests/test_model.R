@@ -11,5 +11,5 @@ test_that('mean of group 1 equals intercept', {
 })
 
 test_that('all factor levels present', {
-  expect_equivalent(levels(model_data$x), unlist(test.mod$xlevels)) #this one fails because of the dummy variable trap
+  expect_equivalent(levels(model_data$x), unlist(test.mod$xlevels))
 })

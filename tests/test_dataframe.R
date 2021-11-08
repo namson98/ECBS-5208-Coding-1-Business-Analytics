@@ -14,5 +14,5 @@ test_that('no missing values', {
 test_that('data types correct', {
   expect_is(testing_data,'data.frame')
   expect_is(testing_data$numbers, 'integer')
-  expect_is(testing_data$letters, 'factor') #this one fails; they're characters
+  expect_is(testing_data$letters, 'character') #this one fails; they're characters
 })

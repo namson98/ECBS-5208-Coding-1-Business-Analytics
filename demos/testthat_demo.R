@@ -6,9 +6,9 @@
 # This makes it very easy to break code that used to work.
 # Automate your tests!
 
-# Fewer bugs. Because you’re explicit about how your code should behave you will have fewer bugs.
-# Better code structure. Code that’s easy to test is usually better designed. 
-# Robust code. 
+# 1. Fewer bugs. Because you’re explicit about how your code should behave you will have fewer bugs.
+# 2. Better code structure. Code that’s easy to test is usually better designed. 
+# 3. Robust code. 
 # 
 # Hadley Wickham said it best, in his 2011 paper on his testthat package:
 #   
@@ -19,14 +19,14 @@
 # The advantage to calling this function, rather than just sourcing the file,
 # is that it will run through all tests even if some fail. When you source it,
 # the test script halts at the first error. If you have multiple testing files,
-# syou can call test_dir('my_test_dir/') instead, and it will run all of the test_ files in that directory.
+# you can call test_dir('my_test_dir/') instead, and it will run all of the test_ files in that directory.
 
 testing_data <- data.frame('letters'=c('a', 'b', 'c', 'd'),
                            'numbers'=seq(1, 4))
 print(testing_data)
 
 model_data = data.frame('y'=c(rnorm(25, 0, 1), rnorm(25, 1, 1)),
-                        'x'=rep(c('c1', 'c2'), each=25))
+                        'x'=as.factor(rep(c('c1', 'c2'), each=25)))
 test.mod = lm(y ~ x, data=model_data)
 
 even_odd = function(n){
@@ -39,3 +39,4 @@ testthat::test_file("tests/test_dataframe.R")
 testthat::test_file("tests/test_model.R")
 
 testthat::test_file("tests/test_function.R")
+
