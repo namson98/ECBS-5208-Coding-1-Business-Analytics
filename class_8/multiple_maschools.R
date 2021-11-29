@@ -254,11 +254,11 @@ chck_sp(df$salary,'Average teacher salary')
 
 
 # reg1: NO control, simple linear regression
-reg1 <- 
+reg1 <- feols(score4 ~ stratio, data=df, vcov = 'hetero')
 reg1
 
 # reg2: NO controls, use piecewise linear spline(P.L.S) with a knot at 18
-reg2 <- 
+reg2 <- feols(score4 ~ lspline(stratio, 18), data=df, vcov = 'hetero') 
 reg2
 
 # Compare the two results:
@@ -279,7 +279,7 @@ summary(fit_seg)
 # reg3: control for english learners dummy (english_d) only. 
 #   Is your parameter different? Is it a confounder?
 
-reg3 <- 
+reg3 <- feols(score4 ~ lspline(stratio, 18) + english_d, data=df, vcov='hetero')
 reg3
 
 # Extra for reg3
@@ -294,7 +294,8 @@ etable( reg3, reg31 )
 
 ##
 # reg4: reg3 + Schools' special students measures (lunch with P.L.S, knot: 15; and special)
-reg4 <- 
+reg4 <- feols( score4 ~ lspline( stratio , 18 ) + english_d +
+                 lspline( lunch, 15 ) + special, data = df , vcov = 'hetero' )
 reg4
 
 ##
@@ -302,7 +303,10 @@ reg4
 #   reg5: reg4 + salary with P.L.S, knots at 35 and 40, exptot, log of income and scratio
 #
 # Reminder: this is already 12 variables...
-reg5 <-
+reg5 <- feols( score4 ~ lspline( stratio , 18 ) + english_d +
+                 lspline( lunch, 15 ) + special +
+                 lspline(salary, c(35, 40)) + exptot +
+                 log(income) + scratio, data = df , vcov = 'hetero' )
 reg5
 
 ###
